@@ -1241,8 +1241,9 @@ fun XServerScreen(
             }
             val configuredExternalMode = ExternalDisplayInputController.fromConfig(container.externalDisplayMode)
             val swapEnabled = container.isExternalDisplaySwap
+            val externalDisplayTheme = ExternalDisplayInputController.Theme.fromConfig(PrefManager.externalDisplayTheme)
 
-            val overlay = SwapInputOverlayView(context, xServerView.getxServer()).apply {
+            val overlay = SwapInputOverlayView(context, xServerView.getxServer(), externalDisplayTheme).apply {
                 visibility = View.GONE
                 setMode(ExternalDisplayInputController.Mode.OFF)
             }
@@ -1257,6 +1258,7 @@ fun XServerScreen(
                         touchpadViewProvider = { PluviaApp.touchpadView },
                     ).apply {
                         setMode(configuredExternalMode)
+                        setTheme(externalDisplayTheme)
                         start()
                     }
                 } else {
@@ -1265,7 +1267,7 @@ fun XServerScreen(
 
             val swapController =
                 if (swapEnabled) {
-                    val surfaceBg = ContextCompat.getColor(context, R.color.external_display_surface_background)
+                    val surfaceBg = ContextCompat.getColor(context, externalDisplayTheme.surfaceBg)
                     ExternalDisplaySwapController(
                         context = context,
                         xServerViewProvider = { xServerView },

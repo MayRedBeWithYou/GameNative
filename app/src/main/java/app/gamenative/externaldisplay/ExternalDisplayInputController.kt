@@ -20,8 +20,6 @@ import com.winlator.container.Container
 import com.winlator.widget.TouchpadView
 import com.winlator.xserver.XServer
 
-private const val EXTERNAL_SURFACE_BG_RES: Int = R.color.external_display_surface_background
-private const val EXTERNAL_KEY_BG_RES: Int = R.color.external_display_key_background
 
 class ExternalDisplayInputController(
     private val context: Context,
@@ -29,6 +27,30 @@ class ExternalDisplayInputController(
     private val touchpadViewProvider: () -> TouchpadView?,
 ) {
     enum class Mode { OFF, TOUCHPAD, KEYBOARD, HYBRID }
+    enum class Theme(val surfaceBg: Int, val keyboardBg: Int, val keyBg: Int, val keyHighlightBg: Int, val keyHighlightStrongBg: Int, val iconColor: Int) {
+        DEFAULT(
+            R.color.external_display_surface_background,
+            R.color.external_display_keyboard_background,
+            R.color.external_display_key_background,
+            R.color.external_display_key_highlight_background,
+            R.color.external_display_key_highlight_strong_background,
+            R.color.external_display_icon_color
+        ),
+        AMOLED(R.color.external_display_amoled_surface_background,
+            R.color.external_display_amoled_keyboard_background,
+            R.color.external_display_amoled_key_background,
+            R.color.external_display_amoled_key_highlight_background,
+            R.color.external_display_amoled_key_highlight_strong_background,
+            R.color.external_display_amoled_icon_color
+        );
+
+        companion object {
+            fun fromConfig(value: String?): Theme = when (value?.lowercase()) {
+                "amoled" -> AMOLED
+                else -> DEFAULT
+            }
+        }
+    }
 
     companion object {
         fun fromConfig(value: String?): Mode = when (value?.lowercase()) {
@@ -42,6 +64,7 @@ class ExternalDisplayInputController(
     private val displayManager = context.getSystemService(DisplayManager::class.java)
     private var presentation: ExternalInputPresentation? = null
     private var mode: Mode = Mode.OFF
+    private var theme: Theme = Theme.DEFAULT
 
     private val displayListener = object : DisplayManager.DisplayListener {
         override fun onDisplayAdded(displayId: Int) {
@@ -80,6 +103,13 @@ class ExternalDisplayInputController(
         updatePresentation()
     }
 
+    fun setTheme(theme: Theme) {
+        if (this.theme != theme) {
+            this.theme = theme
+            presentation?.updateTheme(theme)
+        }
+    }
+
     private fun updatePresentation() {
         if (mode == Mode.OFF) {
             dismissPresentation()
@@ -98,6 +128,7 @@ class ExternalDisplayInputController(
                 context = context,
                 display = targetDisplay,
                 mode = mode,
+                theme = theme,
                 xServer = xServer,
                 touchpadViewProvider = touchpadViewProvider,
             )
@@ -127,6 +158,7 @@ private class ExternalInputPresentation(
     context: Context,
     display: Display,
     private var mode: ExternalDisplayInputController.Mode,
+    private var theme: ExternalDisplayInputController.Theme,
     private val xServer: XServer,
     private val touchpadViewProvider: () -> TouchpadView?,
 ) : Presentation(context, display) {
@@ -147,6 +179,13 @@ private class ExternalInputPresentation(
         }
     }
 
+    fun updateTheme(newTheme: ExternalDisplayInputController.Theme) {
+        if (theme != newTheme) {
+            theme = newTheme
+            renderContent()
+        }
+    }
+
     private fun renderContent() {
         when (mode) {
             ExternalDisplayInputController.Mode.TOUCHPAD -> {
@@ -155,7 +194,7 @@ private class ExternalInputPresentation(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT,
                     )
-                    setBackgroundColor(ContextCompat.getColor(context, EXTERNAL_SURFACE_BG_RES))
+                    setBackgroundColor(ContextCompat.getColor(context, theme.surfaceBg))
                     touchpadViewProvider()?.let { primary ->
                         setSimTouchScreen(primary.isSimTouchScreen)
                     }
@@ -168,7 +207,7 @@ private class ExternalInputPresentation(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT,
                     )
-                    setBackgroundColor(ContextCompat.getColor(context, EXTERNAL_SURFACE_BG_RES))
+                    setBackgroundColor(ContextCompat.getColor(context, theme.surfaceBg))
                 }
 
                 val hintIcon = ImageView(context).apply {
@@ -178,11 +217,12 @@ private class ExternalInputPresentation(
                         gravity = Gravity.CENTER
                     }
                     setImageResource(R.drawable.icon_keyboard)
+                    setColorFilter(ContextCompat.getColor(context, theme.iconColor))
                     alpha = 0.35f
                     scaleType = ImageView.ScaleType.FIT_CENTER
                 }
 
-                val keyboardView = ExternalOnScreenKeyboardView(context, xServer).apply {
+                val keyboardView = ExternalOnScreenKeyboardView(context, xServer, theme).apply {
                     layoutParams = FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -199,6 +239,7 @@ private class ExternalInputPresentation(
                 val hybrid = HybridInputLayout(
                     context = context,
                     xServer = xServer,
+                    theme = theme,
                     touchpadViewProvider = touchpadViewProvider,
                 )
                 setContentView(hybrid)
@@ -213,6 +254,7 @@ private class ExternalInputPresentation(
 private class HybridInputLayout(
     context: Context,
     xServer: XServer,
+    theme: ExternalDisplayInputController.Theme,
     touchpadViewProvider: () -> TouchpadView?,
 ) : FrameLayout(context) {
 
@@ -221,12 +263,12 @@ private class HybridInputLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT,
         )
-        setBackgroundColor(ContextCompat.getColor(context, EXTERNAL_SURFACE_BG_RES))
+        setBackgroundColor(ContextCompat.getColor(context, theme.surfaceBg))
         touchpadViewProvider()?.let { primary ->
             setSimTouchScreen(primary.isSimTouchScreen)
         }
     }
-    private val keyboardView = ExternalOnScreenKeyboardView(context, xServer).apply {
+    private val keyboardView = ExternalOnScreenKeyboardView(context, xServer, theme).apply {
         layoutParams = LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -246,9 +288,10 @@ private class HybridInputLayout(
         }
         background = GradientDrawable().apply {
             shape = GradientDrawable.OVAL
-            setColor(ContextCompat.getColor(context, EXTERNAL_KEY_BG_RES))
+            setColor(ContextCompat.getColor(context, theme.keyBg))
         }
         setImageResource(R.drawable.icon_keyboard)
+        setColorFilter(ContextCompat.getColor(context, theme.iconColor))
         scaleType = ImageView.ScaleType.CENTER_INSIDE
         setPadding(marginPx / 2, marginPx / 2, marginPx / 2, marginPx / 2)
         setOnClickListener { toggleKeyboard() }

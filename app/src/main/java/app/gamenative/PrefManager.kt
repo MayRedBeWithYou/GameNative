@@ -14,6 +14,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import app.gamenative.enums.AppTheme
+import app.gamenative.externaldisplay.ExternalDisplayInputController
 import app.gamenative.ui.enums.AppFilter
 import app.gamenative.ui.enums.HomeDestination
 import app.gamenative.ui.enums.Orientation
@@ -952,6 +953,12 @@ object PrefManager {
     var useAltNotificationIcon: Boolean
         get() = getPref(USE_ALT_NOTIFICATION_ICON, false)
         set(value) = setPref(USE_ALT_NOTIFICATION_ICON, value)
+
+    // External display input theme preference
+    private val EXTERNAL_DISPLAY_THEME = stringPreferencesKey("external_display_theme")
+    var externalDisplayTheme: String
+        get() = getPref(EXTERNAL_DISPLAY_THEME, ExternalDisplayInputController.Theme.DEFAULT.name)
+        set(value) = setPref(EXTERNAL_DISPLAY_THEME, value)
 
     // App language preference (empty string means system default)
     private val APP_LANGUAGE = stringPreferencesKey("app_language")

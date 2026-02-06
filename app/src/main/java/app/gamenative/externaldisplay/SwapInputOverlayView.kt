@@ -15,6 +15,7 @@ import com.winlator.xserver.XServer
 class SwapInputOverlayView(
     context: Context,
     private val xServer: XServer,
+    theme: ExternalDisplayInputController.Theme = ExternalDisplayInputController.Theme.DEFAULT,
 ) : FrameLayout(context) {
 
     private var mode: ExternalDisplayInputController.Mode = ExternalDisplayInputController.Mode.OFF
@@ -26,14 +27,14 @@ class SwapInputOverlayView(
             gravity = Gravity.CENTER
         }
         setImageResource(R.drawable.icon_keyboard)
-        alpha = 0.35f
+        setColorFilter(ContextCompat.getColor(context, theme.iconColor))
         scaleType = ImageView.ScaleType.FIT_CENTER
         visibility = View.GONE
         isClickable = false
         isFocusable = false
     }
 
-    private val keyboardView: ExternalOnScreenKeyboardView = ExternalOnScreenKeyboardView(context, xServer).apply {
+    private val keyboardView: ExternalOnScreenKeyboardView = ExternalOnScreenKeyboardView(context, xServer, theme).apply {
         layoutParams = LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -56,6 +57,7 @@ class SwapInputOverlayView(
             setColor(ContextCompat.getColor(context, R.color.external_display_key_background))
         }
         setImageResource(R.drawable.icon_keyboard)
+        setColorFilter(ContextCompat.getColor(context, theme.iconColor))
         scaleType = ImageView.ScaleType.CENTER_INSIDE
         setPadding(marginPx / 2, marginPx / 2, marginPx / 2, marginPx / 2)
         visibility = View.GONE

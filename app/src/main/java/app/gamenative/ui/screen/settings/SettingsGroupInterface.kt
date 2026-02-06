@@ -237,6 +237,22 @@ fun SettingsGroupInterface(
             onClick = { openLanguageDialog = true },
         )
 
+        // External Display Input Theme
+        var selectedExternalDisplayTheme by rememberSaveable {
+            mutableStateOf(PrefManager.externalDisplayTheme)
+        }
+        val externalDisplayThemeOptions = listOf("Default", "AMOLED")
+        SettingsListDropdown(
+                colors = settingsTileColorsAlt(),
+                title = { Text(text = stringResource(R.string.settings_external_display_theme)) },
+                items = externalDisplayThemeOptions,
+                value = externalDisplayThemeOptions.indexOf(selectedExternalDisplayTheme),
+                onItemSelected = { newTheme ->
+                    selectedExternalDisplayTheme = externalDisplayThemeOptions[newTheme]
+                    PrefManager.externalDisplayTheme = selectedExternalDisplayTheme
+                }
+        )
+
         // Unified visual icon picker (affects app and notification icons)
         var selectedVariant by rememberSaveable { mutableStateOf(if (PrefManager.useAltLauncherIcon || PrefManager.useAltNotificationIcon) 1 else 0) }
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
