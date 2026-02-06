@@ -740,6 +740,8 @@
     <string name="settings_language_restart_confirm">Restart</string>
     <string name="settings_language_changing">Changing language and restarting...</string>
     <string name="settings_external_display_theme">External Display Input Theme</string>
+    <string name="settings_external_display_theme_default">Default</string>
+    <string name="settings_external_display_theme_amoled">AMOLED</string>
 
     <!-- Settings: Emulation Group -->
     <string name="settings_emulation_title">Emulation</string>

@@ -218,7 +218,6 @@ private class ExternalInputPresentation(
                     }
                     setImageResource(R.drawable.icon_keyboard)
                     setColorFilter(ContextCompat.getColor(context, theme.iconColor))
-                    alpha = 0.35f
                     scaleType = ImageView.ScaleType.FIT_CENTER
                 }
 

@@ -80,6 +80,7 @@ import kotlinx.coroutines.CoroutineScope
 import timber.log.Timber
 import app.gamenative.PluviaApp
 import app.gamenative.events.AndroidEvent
+import app.gamenative.externaldisplay.ExternalDisplayInputController
 import app.gamenative.ui.screen.auth.EpicOAuthActivity
 import app.gamenative.ui.screen.auth.GOGOAuthActivity
 import app.gamenative.ui.screen.auth.AmazonOAuthActivity
@@ -239,17 +240,23 @@ fun SettingsGroupInterface(
 
         // External Display Input Theme
         var selectedExternalDisplayTheme by rememberSaveable {
-            mutableStateOf(PrefManager.externalDisplayTheme)
+            mutableStateOf(
+                ExternalDisplayInputController.Theme.fromConfig(PrefManager.externalDisplayTheme),
+            )
         }
-        val externalDisplayThemeOptions = listOf("Default", "AMOLED")
+        val externalDisplayThemes = ExternalDisplayInputController.Theme.entries
+        val externalDisplayThemeLabels = listOf(
+            stringResource(R.string.settings_external_display_theme_default),
+            stringResource(R.string.settings_external_display_theme_amoled),
+        )
         SettingsListDropdown(
                 colors = settingsTileColorsAlt(),
                 title = { Text(text = stringResource(R.string.settings_external_display_theme)) },
-                items = externalDisplayThemeOptions,
-                value = externalDisplayThemeOptions.indexOf(selectedExternalDisplayTheme),
+                items = externalDisplayThemeLabels,
+                value = externalDisplayThemes.indexOf(selectedExternalDisplayTheme),
                 onItemSelected = { newTheme ->
-                    selectedExternalDisplayTheme = externalDisplayThemeOptions[newTheme]
-                    PrefManager.externalDisplayTheme = selectedExternalDisplayTheme
+                    val theme = externalDisplayThemes[newTheme]
+                    PrefManager.externalDisplayTheme = theme.name
                 }
         )
 

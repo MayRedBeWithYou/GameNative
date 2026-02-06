@@ -54,7 +54,7 @@ class SwapInputOverlayView(
         }
         background = GradientDrawable().apply {
             shape = GradientDrawable.OVAL
-            setColor(ContextCompat.getColor(context, R.color.external_display_key_background))
+            setColor(ContextCompat.getColor(context, theme.keyBg))
         }
         setImageResource(R.drawable.icon_keyboard)
         setColorFilter(ContextCompat.getColor(context, theme.iconColor))
