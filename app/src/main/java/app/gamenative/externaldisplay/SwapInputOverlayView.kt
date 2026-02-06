@@ -27,7 +27,7 @@ class SwapInputOverlayView(
             gravity = Gravity.CENTER
         }
         setImageResource(R.drawable.icon_keyboard)
-        setColorFilter(ContextCompat.getColor(context, theme.iconColor))
+        setColorFilter(ContextCompat.getColor(context, theme.keyColor))
         scaleType = ImageView.ScaleType.FIT_CENTER
         visibility = View.GONE
         isClickable = false
@@ -57,7 +57,7 @@ class SwapInputOverlayView(
             setColor(ContextCompat.getColor(context, theme.keyBg))
         }
         setImageResource(R.drawable.icon_keyboard)
-        setColorFilter(ContextCompat.getColor(context, theme.iconColor))
+        setColorFilter(ContextCompat.getColor(context, theme.keyColor))
         scaleType = ImageView.ScaleType.CENTER_INSIDE
         setPadding(marginPx / 2, marginPx / 2, marginPx / 2, marginPx / 2)
         visibility = View.GONE

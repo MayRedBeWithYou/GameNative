@@ -50,6 +50,8 @@ class ExternalOnScreenKeyboardView(
     private val keyHighlightStrongColor: Int =
         ContextCompat.getColor(context, theme.keyHighlightStrongBg)
 
+    private val keyColor: Int = ContextCompat.getColor(context, theme.keyColor)
+
     init {
         orientation = VERTICAL
         setMotionEventSplittingEnabled(true)
@@ -160,7 +162,7 @@ class ExternalOnScreenKeyboardView(
         keys.forEach { spec ->
             val button = Button(context).apply {
                 isAllCaps = false
-                setTextColor(Color.WHITE)
+                setTextColor(keyColor)
                 setTextSize(16f)
                 typeface = Typeface.DEFAULT_BOLD
                 text = spec.normalLabel

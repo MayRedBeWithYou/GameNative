@@ -247,7 +247,7 @@ fun SettingsGroupInterface(
         val externalDisplayThemes = ExternalDisplayInputController.Theme.entries
         val externalDisplayThemeLabels = listOf(
             stringResource(R.string.settings_external_display_theme_default),
-            stringResource(R.string.settings_external_display_theme_amoled),
+            stringResource(R.string.settings_external_display_theme_black),
         )
         SettingsListDropdown(
                 colors = settingsTileColorsAlt(),
@@ -256,6 +256,7 @@ fun SettingsGroupInterface(
                 value = externalDisplayThemes.indexOf(selectedExternalDisplayTheme),
                 onItemSelected = { newTheme ->
                     val theme = externalDisplayThemes[newTheme]
+                    selectedExternalDisplayTheme = theme
                     PrefManager.externalDisplayTheme = theme.name
                 }
         )

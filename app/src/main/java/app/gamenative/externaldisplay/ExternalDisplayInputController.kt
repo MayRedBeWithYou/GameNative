@@ -27,26 +27,26 @@ class ExternalDisplayInputController(
     private val touchpadViewProvider: () -> TouchpadView?,
 ) {
     enum class Mode { OFF, TOUCHPAD, KEYBOARD, HYBRID }
-    enum class Theme(val surfaceBg: Int, val keyboardBg: Int, val keyBg: Int, val keyHighlightBg: Int, val keyHighlightStrongBg: Int, val iconColor: Int) {
+    enum class Theme(val surfaceBg: Int, val keyboardBg: Int, val keyBg: Int, val keyHighlightBg: Int, val keyHighlightStrongBg: Int, val keyColor: Int) {
         DEFAULT(
             R.color.external_display_surface_background,
             R.color.external_display_keyboard_background,
             R.color.external_display_key_background,
             R.color.external_display_key_highlight_background,
             R.color.external_display_key_highlight_strong_background,
-            R.color.external_display_icon_color
+            R.color.external_display_key_color
         ),
-        AMOLED(R.color.external_display_amoled_surface_background,
-            R.color.external_display_amoled_keyboard_background,
-            R.color.external_display_amoled_key_background,
-            R.color.external_display_amoled_key_highlight_background,
-            R.color.external_display_amoled_key_highlight_strong_background,
-            R.color.external_display_amoled_icon_color
+        BLACK(R.color.external_display_black_surface_background,
+            R.color.external_display_black_keyboard_background,
+            R.color.external_display_black_key_background,
+            R.color.external_display_black_key_highlight_background,
+            R.color.external_display_black_key_highlight_strong_background,
+            R.color.external_display_black_key_color
         );
 
         companion object {
             fun fromConfig(value: String?): Theme = when (value?.lowercase()) {
-                "amoled" -> AMOLED
+                "black" -> BLACK
                 else -> DEFAULT
             }
         }
@@ -217,7 +217,7 @@ private class ExternalInputPresentation(
                         gravity = Gravity.CENTER
                     }
                     setImageResource(R.drawable.icon_keyboard)
-                    setColorFilter(ContextCompat.getColor(context, theme.iconColor))
+                    setColorFilter(ContextCompat.getColor(context, theme.keyColor))
                     scaleType = ImageView.ScaleType.FIT_CENTER
                 }
 
@@ -290,7 +290,7 @@ private class HybridInputLayout(
             setColor(ContextCompat.getColor(context, theme.keyBg))
         }
         setImageResource(R.drawable.icon_keyboard)
-        setColorFilter(ContextCompat.getColor(context, theme.iconColor))
+        setColorFilter(ContextCompat.getColor(context, theme.keyColor))
         scaleType = ImageView.ScaleType.CENTER_INSIDE
         setPadding(marginPx / 2, marginPx / 2, marginPx / 2, marginPx / 2)
         setOnClickListener { toggleKeyboard() }
